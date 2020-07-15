@@ -95,21 +95,24 @@ def foreign_umpire():
 
 def matches_team_season():
     selected_columns = data3[["date","batting_team","season"]]
-
     new_df = selected_columns.copy()
+
     df1 = new_df.drop_duplicates()
-
-    group_name = df1.groupby(['season','batting_team'])['date'].count()
-    gp = group_name.to_frame()
-    gp.reset_index(inplace = True)
-
-    gp_new = gp.rename(columns={'date': 'games_played'})
-    gp_new.to_csv('season_team.csv')
-
-    d = {}
-    for i in gp_new['season'].unique():
-        d[i] = [{gp_new['batting_team'][j]: gp_new['games_played'][j]} for j in gp_new[gp_new['season']==i].index]
+    d = df1.pivot_table(index = 'season', margins=all, columns= 'batting_team' ,values = 'date' ,aggfunc='count', fill_value=0)
     
+    d.reset_index(inplace=True)
+    d.drop('All', axis=1, inplace = True)
+    d.drop(10, inplace = True)
+    d.to_csv('tables/season_team.csv')
+
+    d.plot.bar(x = 'season', figsize=(20,10), width = 0.8)
+    plt.xlabel('Seasons')
+    plt.ylabel('Matches Played')
+    plt.title('Number of Matches Played by Teams by Seasons')
+
+    plt.savefig(os.path.join('images/Matches Played by Teams by Seasons.png'), dpi=300, format='png', bbox_inches='tight')
+    plt.show()
+
 
 #Calling all the functions
 
