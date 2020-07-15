@@ -9,7 +9,7 @@ We are going to use the data of [IPL]( https://www.kaggle.com/manasgarg/ipl/vers
 This project is built on Python 3.8.2 and uses standard Python libraries. Apart from that, we have also used [matplotlib]( https://matplotlib.org/) to plot charts. 
 
 
-## Installation
+## How to run this file
 
 clone this repo
 
@@ -22,7 +22,8 @@ install all dependencies
 ```bash
 pip3 install -r requirements.txt
 ```
+All the images and their respective tables of the plotted charts can be found in images and tables folder
 
-Last Step, run the program on jupyter notebook cell by cell. 
+Last Step, run the .py file.
 
 Thank you!
