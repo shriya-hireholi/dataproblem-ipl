@@ -4,7 +4,7 @@ venv/
 .venv
 
 # files
-.vscode
-.ipynb_checkpoints
+.vscode/
+.ipynb_checkpoints/
 notebook\ file/
 
