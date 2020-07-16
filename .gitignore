@@ -2,3 +2,9 @@
 # Environments
 venv/
 .venv
+
+# files
+.vscode
+.ipynb_checkpoints
+notebook\ file
+

@@ -22,7 +22,7 @@ install all dependencies
 ```bash
 pip3 install -r requirements.txt
 ```
-All the images and their respective tables of the plotted charts can be found in images and tables folder
+All the images of the plotted charts can be found in images folder
 
 Last Step, run the .py file.
 

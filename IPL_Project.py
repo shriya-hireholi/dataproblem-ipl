@@ -1,125 +1,171 @@
-#Imports
+# Imports
 
-import pandas as pd
+import csv
 from matplotlib import pyplot as plt
-import numpy as np
 import os
 
-deliveries = pd.read_csv('data_source/deliveries.csv')
-matches = pd.read_csv('data_source/matches.csv')
-
-
-# Merging Two Datasets
-
-data3 = pd.merge(deliveries,matches)
-data3.to_csv('data_source/total.csv')
-
-# Total runs scored by team
 
 def total_runs_scored():
-    x = data3.groupby(['batting_team'], as_index=False)['total_runs'].count()
-    x.to_csv('tables/battingteam_totalruns_table.csv')
-    fig = plt.figure()
-    ax = fig.add_axes([0,0,1,1])
-    ax.bar(x.batting_team,x.total_runs, width = 0.5)
-    plt.xticks(rotation = 'vertical')
-    plt.xlabel('Teams')
-    plt.ylabel('Total Runs')
-    plt.title('Total runs by Teams')
-    for i in range(len(x.total_runs)):
-        plt.annotate(str(x.total_runs[i]), xy=(x.batting_team[i], x.total_runs[i]))
+    with open('data_source/deliveries.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        deliveries = []
+        for row in csv_reader:
+            deliveries.append(row)
+    i = 0
+    runs_scored = {}
+    for r in deliveries:
+        if i == 0:
+            i += 1
+        else:
+            if r[2] not in runs_scored:
+                runs_scored[r[2]] = int(r[17])
+            else:
+                runs_scored[r[2]] += int(r[17])
+
+    x, y = zip(*runs_scored.items())
+    plt.figure(figsize=(15, 10))
+    plt.bar(x, y)
+    plt.title("Total runs by Teams")
+    plt.ylabel("Total Runs")
+    plt.xlabel("Teams")
+    plt.xticks(rotation=' vertical ')
     plt.savefig(os.path.join('images/Total runs by Teams.png'), dpi=300, format='png', bbox_inches='tight')
     plt.show()
 
 
-# Top batsman for Royal Challengers Bangalore
-
 def top_batsman_RCB():
-    y = data3.groupby(['batsman','batting_team'], as_index=False)['total_runs'].count()
-    
-    dict1 = {}
-    for i in y.index:
-        if((y['batting_team'][i]) == 'Royal Challengers Bangalore'):
-            dict1.update({y['batsman'][i]: y['total_runs'][i]})
+    with open('data_source/deliveries.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        deliveries = []
+        for row in csv_reader:
+            deliveries.append(row)
 
-    z = pd.DataFrame(dict1.items(),columns=['batsman','total_runs'])
-    z.to_csv('tables/batsman_totalruns_table.csv')
+    i = 0
+    rcb_batsman = {}
+    for r in deliveries:
+        if i == 0:
+            i += 1
+        else:
+            if r[2] == 'Royal Challengers Bangalore':
+                if r[6] not in rcb_batsman:
+                    rcb_batsman[r[6]] = int(r[15])
+                else:
+                    rcb_batsman[r[6]] += int(r[17])
 
-    fig = plt.figure()
-    ax = fig.add_axes([2,2,3,3])
-    ax.plot(z.batsman,z.total_runs)
-    plt.xticks(rotation = 'vertical')
-    plt.xlabel('Batsman')
-    plt.ylabel('Total Runs')
-    plt.title('Total runs by RCB batsman')
-
-    for i in range(len(z.total_runs)):
-        plt.annotate(str(z.total_runs[i]), xy=(z.batsman[i], z.total_runs[i]))
+    x, y = zip(*rcb_batsman.items())
+    plt.figure(figsize=(15, 10))
+    plt.plot(x, y)
+    plt.title("otal runs by RCB batsman")
+    plt.ylabel("Total Runs")
+    plt.xlabel("Batsman")
+    plt.xticks(rotation='vertical')
     plt.savefig(os.path.join('images/Total runs by RCB batsman.png'), dpi=300, format='png', bbox_inches='tight')
     plt.show()
 
 
-
-#Foreign umpire analysis
-
 def foreign_umpire():
-    umpires = pd.read_csv('data_source/umpires.csv')
-    u = umpires.groupby(['Umpire','Nationality'], as_index=False)['No. of Matches'].count()
     
-    u1 = {}
-    for i in u.Nationality:
-        if i != 'India' and i in u1:
-            u1[i] +=1
-        
-        if i != 'India' and i not in u1:
-            u1[i] = 1
+    with open('data_source/umpires.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        umpires = []
+        for row in csv_reader:
+            umpires.append(row)
+            
+    u = {}
+    i = 0
+    for r in umpires:       
+        if i == 0:
+            i += 1
+        else:
+            if r[1] != 'India':
+                if r[1] not in u:
+                    u[r[1]] = 1
+                else:
+                    u[r[1]] += 1
 
-    ump_dataframe = pd.DataFrame(u1.items(),columns=['Nationality','count_ump'])
-    ump_dataframe.to_csv('tables/umpire_nationality_count.csv')
-
-    plt.bar(ump_dataframe.Nationality, ump_dataframe.count_ump)
-
-    plt.xticks(rotation = 'vertical')
-    plt.xlabel('Nationality')
-    plt.ylabel('Count of Umpire')
-    plt.title('Foreign umpire analysis')
-
-    for i in range(len(ump_dataframe.count_ump)):
-        plt.annotate(str(ump_dataframe.count_ump[i]), xy=(ump_dataframe.Nationality[i], ump_dataframe.count_ump[i]))
-    
+    x, y = zip(*u.items())
+    plt.figure(figsize=(15, 10))
+    plt.bar(x, y)
+    plt.title("Foreign umpire analysis")
+    plt.ylabel("Count of Umpire")
+    plt.xlabel("Nationality")
+    plt.xticks(rotation=' vertical')
     plt.savefig(os.path.join('images/Foreign umpire analysis.png'), dpi=300, format='png', bbox_inches='tight')
     plt.show()
 
 
-#Stacked chart of matches played by team by season
-
 def matches_team_season():
-    selected_columns = data3[["date","batting_team","season"]]
-    new_df = selected_columns.copy()
-
-    df1 = new_df.drop_duplicates()
-    d = df1.pivot_table(index = 'season', margins=all, columns= 'batting_team' ,values = 'date' ,aggfunc='count', fill_value=0)
+    with open('data_source/matches.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        matches = []
+        for i in csv_reader:
+            matches.append(i)
+            
+    with open('data_source/deliveries.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        deliveries = []
+        for i in csv_reader:
+            deliveries.append(i)
+           
+    def merge(lst1, lst2): 
+        return [a + [b[1]] for (a, b) in zip(lst1, lst2)]   
+    mergedlst = merge(deliveries, matches)
+#     print(mergedlst)
+           
+    i = 0
+    s = {}
     
-    d.reset_index(inplace=True)
-    d.drop('All', axis=1, inplace = True)
-    d.drop(10, inplace = True)
-    d.to_csv('tables/season_team.csv')
+    for r in mergedlst:
+        if i == 0:
+            i += 1
+        else:
+            if r[21] not in s:
+                if r[21] not in s:
+                    s[r[21]] = {}
 
-    d.plot.bar(x = 'season', figsize=(20,10), width = 0.8)
-    plt.xlabel('Seasons')
-    plt.ylabel('Matches Played')
-    plt.title('Number of Matches Played by Teams by Seasons')
+    ipl_teams = ['Royal Challengers Bangalore', 'Sunrisers Hyderabad', 'Chennai Super Kings', 'Deccan Chargers', 'Delhi Daredevils', 'Gujarat Lions', 'Kings XI Punjab', 'Kochi Tuskers Kerala', 'Kolkata Knight Riders', 'Mumbai Indians', 'Pune Warriors', 'Rajasthan Royals', 'Rising Pune Supergiant', 'Rising Pune Supergiants']
 
+    for i in ipl_teams:
+        for key in sorted(s):
+            s[key][i] = 0
+    
+    for x in matches:
+        if x[1] in s and x[4] in s[x[1]] and x[5] in s[x[1]]:
+            s[x[1]][x[4]] += 1
+            s[x[1]][x[5]] += 1
+
+    ''' making dictionary of teams containg list of games playes in every year and a list of years'''
+    teams = {}
+    years = []
+
+    for key, team_dict in s.items():
+        years.append(key)
+        for team, pop in sorted(team_dict.items()):
+            if team not in teams:
+                teams[team] = []
+            teams[team].append(pop)
+
+    years = sorted(years)
+    teams_count = sorted(teams.keys())
+    year_sum = [0]*len(years)
+    bar_graphs = []
+
+    for team in teams_count:
+        graph = plt.bar(years, teams[team], bottom=year_sum)
+        bar_graphs.append(graph[0])
+        year_sum = [year_sum[i] + teams[team][i] for i in range(len(years))]
+
+    plt.legend(bar_graphs, teams_count)
     plt.savefig(os.path.join('images/Matches Played by Teams by Seasons.png'), dpi=300, format='png', bbox_inches='tight')
     plt.show()
 
 
-#Calling all the functions
+def main():
+    total_runs_scored()
+    top_batsman_RCB()
+    foreign_umpire()
+    matches_team_season()
 
-total_runs_scored()
 
-top_batsman_RCB()
-
-foreign_umpire()
-
-matches_team_season()
+if __name__ == '__main__':
+    main()
