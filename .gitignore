@@ -1,2 +1,4 @@
 # Files to ignore
 notebook_file/
+.ipynb_checkpoints/
+.vscode/
