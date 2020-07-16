@@ -2,3 +2,7 @@
 notebook_file/
 .ipynb_checkpoints/
 .vscode/
+
+# Virtual envs
+venv/
+.venv
