@@ -2,6 +2,7 @@
 notebook_file/
 .ipynb_checkpoints/
 .vscode/
+_pycache_/
 
 # Virtual envs
 venv/
